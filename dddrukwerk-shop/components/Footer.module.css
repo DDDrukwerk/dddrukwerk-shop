@@ -1,0 +1,91 @@
+.footer {
+  background: linear-gradient(135deg, #0D0D0D 0%, #1a1a1a 100%);
+  border-top: 2px solid var(--color-antiek-goud);
+  padding: 3rem 2rem 1rem;
+  color: #aaa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.section h4 {
+  color: var(--color-warm-creme);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #999;
+  margin-bottom: 1rem;
+}
+
+.section a {
+  color: var(--color-antiek-goud);
+  transition: color 0.3s ease;
+}
+
+.section a:hover {
+  color: var(--color-champagne);
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.section ul li a {
+  font-size: 0.9rem;
+}
+
+.social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social a {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bottom {
+  border-top: 1px solid var(--color-antiek-goud);
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.payment {
+  display: flex;
+  gap: 0.5rem;
+  color: var(--color-antiek-goud);
+}
+
+@media (max-width: 768px) {
+  .bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}

@@ -1,0 +1,246 @@
+.cartOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  justify-content: flex-end;
+  animation: slideIn 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cartPanel {
+  width: 100%;
+  max-width: 450px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0D0D0D 100%);
+  height: 100vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.cartPanel h2 {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--color-antiek-goud);
+  padding-bottom: 1rem;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--color-antiek-goud);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeBtn:hover {
+  color: var(--color-champagne);
+  transform: scale(1.2);
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 2rem 0;
+}
+
+.items {
+  margin-bottom: 2rem;
+}
+
+.item {
+  background: rgba(201, 168, 76, 0.05);
+  border: 1px solid var(--color-antiek-goud);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemInfo h4 {
+  color: var(--color-warm-creme);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.customization {
+  font-size: 0.85rem;
+  color: var(--color-antiek-goud);
+  margin-bottom: 0.5rem;
+}
+
+.qty {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.itemPrice {
+  text-align: right;
+  margin-left: 1rem;
+}
+
+.itemPrice strong {
+  display: block;
+  color: var(--color-champagne);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--color-antiek-goud);
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.removeBtn:hover {
+  color: var(--color-error);
+}
+
+.summary {
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid var(--color-antiek-goud);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 2px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #aaa;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-antiek-goud);
+  font-size: 1.1rem;
+  color: var(--color-warm-creme);
+}
+
+.summaryTotal strong {
+  color: var(--color-champagne);
+  font-size: 1.3rem;
+}
+
+.checkoutBtn, .payBtn, .backBtn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background-color: var(--color-antiek-goud);
+  color: var(--color-deep-black);
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.checkoutBtn:hover, .payBtn:hover {
+  background-color: var(--color-champagne);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(201, 168, 76, 0.3);
+}
+
+.backBtn {
+  background-color: transparent;
+  border: 2px solid var(--color-antiek-goud);
+  color: var(--color-antiek-goud);
+}
+
+.backBtn:hover {
+  background-color: var(--color-antiek-goud);
+  color: var(--color-deep-black);
+}
+
+.checkoutForm {
+  animation: fadeIn 0.3s ease;
+}
+
+.checkoutForm h3 {
+  margin-bottom: 1.5rem;
+  color: var(--color-warm-creme);
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  color: var(--color-antiek-goud);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-antiek-goud);
+  background-color: #0D0D0D;
+  color: var(--color-text-light);
+  border-radius: 2px;
+  font-family: 'Lato', sans-serif;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--color-champagne);
+  box-shadow: 0 0 8px rgba(240, 208, 128, 0.2);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .cartPanel {
+    max-width: 100%;
+  }
+}
