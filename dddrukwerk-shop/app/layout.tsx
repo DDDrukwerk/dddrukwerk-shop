@@ -1,5 +1,6 @@
 import './globals.css'
 import { Metadata } from 'next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export const metadata: Metadata = {
   title: 'DDDrukwerk | Premium Custom Merchandise',
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="nl">
       <body className="antialiased">
         {children}
+        <SpeedInsights />
       </body>
     </html>
   )
