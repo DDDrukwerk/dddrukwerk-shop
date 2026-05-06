@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, ChangeEvent, FormEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import styles from './ProductShowcase.module.css'
 
 interface ProductOption {

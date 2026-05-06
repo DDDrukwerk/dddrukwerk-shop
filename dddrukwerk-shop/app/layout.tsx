@@ -1,5 +1,6 @@
 import './globals.css'
 import { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
   title: 'DDDrukwerk | Premium Custom Merchandise',
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="nl">
       <body className="antialiased">
         {children}
+        <Analytics />
       </body>
     </html>
   )
