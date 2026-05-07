@@ -860,8 +860,95 @@
     .footer-section ul li a { font-size: .9rem; color: var(--color-antiek-goud); }
     .footer-section ul li a:hover { color: var(--color-champagne); }
 
-    .footer-social { display: flex; gap: 1rem; margin-top: 1rem; }
-    .footer-social a { font-size: .9rem; font-weight: 600; }
+    .footer-social { display: flex; gap: 1.25rem; margin-top: 1.25rem; align-items: center; flex-wrap: wrap; }
+
+    .social-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(201,168,76,.35);
+      background: rgba(201,168,76,.04);
+      transition: all .3s ease;
+      position: relative;
+    }
+
+    .social-icon:hover {
+      border-color: var(--color-antiek-goud);
+      background: rgba(201,168,76,.12);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(201,168,76,.2);
+    }
+
+    .social-icon img {
+      width: 22px; height: 22px;
+      object-fit: contain;
+      filter: brightness(0) invert(0.85);
+      transition: filter .3s ease;
+    }
+
+    .social-icon:hover img {
+      filter: brightness(0) saturate(100%) invert(70%) sepia(60%) saturate(400%) hue-rotate(5deg) brightness(95%);
+    }
+
+    .social-icon[title]::after {
+      content: attr(title);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-antiek-goud);
+      color: var(--color-deep-black);
+      font-family: 'Lato', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 3px 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .social-icon:hover[title]::after { opacity: 1; }
+
+    /* QR code in footer */
+    .footer-qr {
+      margin-top: 1rem;
+    }
+
+    .footer-qr img {
+      width: 80px; height: 80px;
+      filter: brightness(0) invert(.85);
+      opacity: .6;
+      transition: opacity .3s;
+    }
+
+    .footer-qr:hover img { opacity: 1; }
+
+    .footer-qr span {
+      display: block;
+      font-size: .7rem;
+      color: #666;
+      font-family: 'Lato', sans-serif;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: .25rem;
+    }
+
+    /* Envelop in header */
+    .header-icon {
+      width: 16px; height: 16px;
+      object-fit: contain;
+      filter: brightness(0) invert(.6);
+      vertical-align: middle;
+      margin-right: 4px;
+      transition: filter .3s;
+    }
+
+    .header-contact a:hover .header-icon {
+      filter: brightness(0) saturate(100%) invert(70%) sepia(60%) saturate(400%) hue-rotate(5deg) brightness(95%);
+    }
 
     .footer-bottom {
       border-top: 1px solid var(--color-antiek-goud);
@@ -962,7 +1049,9 @@
     <nav class="nav">
       <a href="#producten">Producten</a>
       <a href="#over">Over Ons</a>
-      <a href="mailto:info@dddrukwerk.nl">Contact</a>
+      <a href="mailto:info@dddrukwerk.nl">
+        <img src="/icons/Envelop_Icon.svg" alt="" class="header-icon" />Contact
+      </a>
       <a href="#producten" class="contact-btn">Offerte aanvragen</a>
     </nav>
   </div>
@@ -1146,8 +1235,22 @@
       <h4>DDDrukwerk</h4>
       <p>Premium custom merchandise gemaakt met aandacht voor detail.</p>
       <div class="footer-social">
-        <a href="https://instagram.com/dddrukwerk" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a href="mailto:info@dddrukwerk.nl">Email</a>
+        <a href="https://instagram.com/dddrukwerk" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+          <img src="/icons/Instagram_Icon.png" alt="Instagram" />
+        </a>
+        <a href="https://facebook.com/dddrukwerk" target="_blank" rel="noopener noreferrer" class="social-icon" title="Facebook">
+          <img src="/icons/Facebook_Icon.svg" alt="Facebook" />
+        </a>
+        <a href="https://tiktok.com/@dddrukwerk" target="_blank" rel="noopener noreferrer" class="social-icon" title="TikTok">
+          <img src="/icons/Tiktok_Icon.svg" alt="TikTok" />
+        </a>
+        <a href="mailto:info@dddrukwerk.nl" class="social-icon" title="E-mail">
+          <img src="/icons/Envelop_Icon.svg" alt="E-mail" />
+        </a>
+      </div>
+      <div class="footer-qr">
+        <img src="/icons/qr_dddrukwerk.svg" alt="QR-code DDDrukwerk" />
+        <span>Scan voor website</span>
       </div>
     </div>
     <div class="footer-section">
