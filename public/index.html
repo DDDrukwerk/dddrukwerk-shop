@@ -995,6 +995,78 @@
     .toast.error { border-color: var(--color-error); }
     .toast.success { border-color: var(--color-success); color: #5cb85c; }
 
+    /* ── Product afbeelding in kaart ── */
+    .product-img-wrap {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(201,168,76,.3);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+      filter: brightness(.95);
+    }
+
+    .product-card:hover .product-img { transform: scale(1.05); filter: brightness(1); }
+
+    /* ── Terugkerende klant toggle ── */
+    .returning-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: .875rem;
+      padding: 1rem;
+      background: rgba(201,168,76,.04);
+      border: 1px solid rgba(201,168,76,.3);
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+
+    .returning-toggle:hover { border-color: var(--color-antiek-goud); background: rgba(201,168,76,.08); }
+    .returning-toggle.active { border-color: var(--color-antiek-goud); background: rgba(201,168,76,.1); }
+
+    .returning-toggle input[type=checkbox] {
+      accent-color: var(--color-antiek-goud);
+      width: 17px; height: 17px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .returning-toggle-text strong {
+      display: block;
+      color: var(--color-warm-creme);
+      font-family: 'Lato', sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: .2rem;
+    }
+
+    .returning-toggle-text span {
+      font-size: .8rem;
+      color: #888;
+      font-family: 'Lato', sans-serif;
+      line-height: 1.4;
+    }
+
+    .setup-fee-badge {
+      display: inline-block;
+      background: var(--color-antiek-goud);
+      color: var(--color-deep-black);
+      font-family: 'Lato', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 2px 7px;
+      margin-top: .35rem;
+      text-transform: uppercase;
+    }
+
     /* ── Stap indicator ── */
     .step-indicator {
       display: flex;
@@ -1128,6 +1200,22 @@
           <strong id="total-display">€ —</strong>
           <small id="ppu-display">— / stuk</small>
         </div>
+      </div>
+
+      <!-- Terugkerende klant -->
+      <label class="returning-toggle" id="returning-toggle">
+        <input type="checkbox" id="returning-checkbox" />
+        <div class="returning-toggle-text">
+          <strong>Ik heb dit product eerder bij DDDrukwerk besteld</strong>
+          <span>Het design/bestand is al aangemaakt — geen setup kosten.</span>
+          <div id="setup-fee-badge" class="setup-fee-badge">+ €25,— setup &amp; design kosten</div>
+        </div>
+      </label>
+
+      <!-- Materiaal / formaat selects -->
+      <div class="selects-section" style="display:none; margin-bottom:1.5rem;">
+        <div class="panel-section-label">Specificaties</div>
+        <div id="selects-container"></div>
       </div>
 
       <!-- Add-ons -->
@@ -1297,10 +1385,11 @@
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   products: {},
-  addons: {},
   selectedProduct: null,
   quantity: 50,
   selectedAddons: [],
+  selectedSelects: {},
+  isReturningCustomer: false,
   calculation: null
 };
 let debounceTimer = null;
@@ -1312,7 +1401,6 @@ async function init() {
     if (!res.ok) throw new Error('API niet bereikbaar');
     const data = await res.json();
     state.products = data.products;
-    state.addons = data.addons;
     renderProductGrid();
     bindEvents();
   } catch (err) {
@@ -1322,8 +1410,10 @@ async function init() {
 
 // ─── Producten renderen ───────────────────────────────────────────────────────
 const ICONS = {
-  sleutelhanger:'🔑', naamplaatje:'🪪', button_badge:'📌',
-  magneet:'🧲', sticker_vel:'🏷️', sticker_los:'✂️', visitekaartje:'📇'
+  'keychain-basic':   '🔑',
+  'keychain-premium': '⭐',
+  'uv-print-small':   '🎨',
+  'uv-print-medium':  '🖼️'
 };
 
 function renderProductGrid() {
@@ -1334,8 +1424,13 @@ function renderProductGrid() {
     const card = document.createElement('div');
     card.className = 'product-card';
     card.dataset.key = key;
+
+    const mediaHTML = product.image
+      ? `<div class="product-img-wrap"><img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy" /></div>`
+      : `<span class="product-icon">${ICONS[key] || '📦'}</span>`;
+
     card.innerHTML = `
-      <span class="product-icon">${ICONS[key] || '📦'}</span>
+      ${mediaHTML}
       <h3>${product.name}</h3>
       <p>${product.description}</p>
       <div class="product-price">Vanaf <strong>€${minPrice.toFixed(2).replace('.', ',')}</strong> / ${product.unit}</div>
@@ -1354,6 +1449,12 @@ function renderProductGrid() {
 function openConfigurator(productKey) {
   state.selectedProduct = productKey;
   state.selectedAddons = [];
+  state.selectedSelects = {};
+  state.isReturningCustomer = false;
+  const cb = document.getElementById('returning-checkbox');
+  cb.checked = false;
+  document.getElementById('returning-toggle').classList.remove('active');
+  document.getElementById('setup-fee-badge').style.display = 'inline-block';
 
   const product = state.products[productKey];
   document.getElementById('panel-product-name').textContent = product.name;
@@ -1362,7 +1463,8 @@ function openConfigurator(productKey) {
   document.getElementById('step-config').style.display = 'block';
   document.getElementById('step-contact').style.display = 'none';
 
-  // Add-ons renderen
+  // Opties renderen
+  renderSelects();
   renderAddons();
 
   // Overlay tonen
@@ -1379,23 +1481,62 @@ function closeConfigurator() {
   document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
 }
 
+function renderSelects() {
+  const container = document.getElementById('selects-container');
+  container.innerHTML = '';
+  const product = state.products[state.selectedProduct];
+  if (!product || !product.selects || product.selects.length === 0) {
+    container.closest('.selects-section').style.display = 'none';
+    return;
+  }
+  container.closest('.selects-section').style.display = 'block';
+  product.selects.forEach(sel => {
+    const group = document.createElement('div');
+    group.className = 'form-group';
+    group.style.marginBottom = '.75rem';
+    const label = document.createElement('label');
+    label.style.cssText = 'display:block;color:var(--color-antiek-goud);font-weight:600;text-transform:uppercase;font-size:.85rem;letter-spacing:.5px;margin-bottom:.4rem;font-family:Lato,sans-serif;';
+    label.textContent = sel.label;
+    const select = document.createElement('select');
+    sel.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+    state.selectedSelects[sel.key] = sel.options[0];
+    select.addEventListener('change', e => {
+      state.selectedSelects[sel.key] = e.target.value;
+    });
+    group.appendChild(label);
+    group.appendChild(select);
+    container.appendChild(group);
+  });
+}
+
 function renderAddons() {
   const container = document.getElementById('addons-container');
   container.innerHTML = '';
-  for (const [key, addon] of Object.entries(state.addons)) {
+  const product = state.products[state.selectedProduct];
+  if (!product || !product.addons || product.addons.length === 0) {
+    container.closest('.addons-section').style.display = 'none';
+    return;
+  }
+  container.closest('.addons-section').style.display = 'block';
+  product.addons.forEach(addon => {
     const priceLabel = addon.priceType === 'flat'
       ? `€${addon.price.toFixed(2).replace('.', ',')} vast`
       : `+€${addon.price.toFixed(2).replace('.', ',')} / stuk`;
     const label = document.createElement('label');
     label.className = 'addon-item';
     label.innerHTML = `
-      <input type="checkbox" value="${key}" />
+      <input type="checkbox" value="${addon.key}" />
       <span class="addon-name">${addon.name}</span>
       <span class="addon-price">${priceLabel}</span>
     `;
     label.querySelector('input').addEventListener('change', onAddonChange);
     container.appendChild(label);
-  }
+  });
 }
 
 function renderStaffel(productKey, qty) {
@@ -1488,6 +1629,13 @@ function bindEvents() {
     document.getElementById('configurator-panel').scrollTop = 0;
   });
 
+  document.getElementById('returning-checkbox').addEventListener('change', e => {
+    state.isReturningCustomer = e.target.checked;
+    document.getElementById('returning-toggle').classList.toggle('active', e.target.checked);
+    document.getElementById('setup-fee-badge').style.display = e.target.checked ? 'none' : 'inline-block';
+    debouncedCalculate();
+  });
+
   document.getElementById('submit-btn').addEventListener('click', onSubmit);
 
   document.addEventListener('keydown', e => {
@@ -1507,7 +1655,7 @@ async function calculate() {
     const res = await fetch('/api/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product: state.selectedProduct, quantity: state.quantity, addons: state.selectedAddons })
+      body: JSON.stringify({ product: state.selectedProduct, quantity: state.quantity, addons: state.selectedAddons, selects: state.selectedSelects, isReturningCustomer: state.isReturningCustomer })
     });
     if (!res.ok) return;
     const calc = await res.json();
@@ -1553,7 +1701,9 @@ async function onSubmit() {
     opmerkingen:   document.getElementById('opmerkingen').value.trim(),
     product:       state.selectedProduct,
     quantity:      state.quantity,
-    addons:        state.selectedAddons
+    addons:             state.selectedAddons,
+    selects:            state.selectedSelects,
+    isReturningCustomer: state.isReturningCustomer
   };
 
   try {

@@ -9,131 +9,100 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// ─── Productcatalogus met staffelprijzen ───────────────────────────────────────
+// ─── Productcatalogus (exact uit dddrukwerk-shop) ─────────────────────────────
+// Staffelprijzen zijn schattingen op basis van de basisprijs — pas aan naar wens.
+
+// Setup/design kosten (eenmalig, alleen bij nieuwe klanten / nieuw design)
+const SETUP_FEE = { key: 'setup_fee', name: 'Setup & design kosten (eenmalig)', price: 25.00, priceType: 'flat' };
 
 const PRODUCTS = {
-  sleutelhanger: {
-    name: 'Sleutelhanger',
-    category: 'Accessoires',
-    description: 'Gegraveerde aluminium sleutelhangers op maat',
+  'keychain-basic': {
+    name: 'Sleutelhanger Basic',
+    description: '3D geprint met PLA op de Bambu Lab P1S — strak, duurzaam en volledig op maat',
     unit: 'stuk',
-    minOrder: 10,
-    tiers: [
-      { min: 1,    max: 9,        price: 2.45 },
-      { min: 10,   max: 24,       price: 1.85 },
-      { min: 25,   max: 49,       price: 1.45 },
-      { min: 50,   max: 99,       price: 1.20 },
-      { min: 100,  max: 249,      price: 0.95 },
-      { min: 250,  max: 499,      price: 0.75 },
-      { min: 500,  max: 999,      price: 0.60 },
-      { min: 1000, max: Infinity, price: 0.48 }
-    ]
-  },
-  naamplaatje: {
-    name: 'Naamplaatje',
-    category: 'Identificatie',
-    description: 'Gegraveerde naamplaatjes in aluminium of messing',
-    unit: 'stuk',
-    minOrder: 5,
+    image: null,   // Zet hier een Instagram-foto URL, bijv.: 'https://...'
     tiers: [
       { min: 1,   max: 9,        price: 3.50 },
-      { min: 10,  max: 24,       price: 2.65 },
-      { min: 25,  max: 49,       price: 2.15 },
-      { min: 50,  max: 99,       price: 1.75 },
-      { min: 100, max: 249,      price: 1.40 },
-      { min: 250, max: 499,      price: 1.10 },
-      { min: 500, max: Infinity, price: 0.90 }
+      { min: 10,  max: 24,       price: 3.00 },
+      { min: 25,  max: 49,       price: 2.75 },
+      { min: 50,  max: 99,       price: 2.50 },
+      { min: 100, max: 249,      price: 2.20 },
+      { min: 250, max: Infinity, price: 2.00 }
+    ],
+    selects: [
+      { key: 'kleur', label: 'PLA kleur', options: ['Zwart', 'Wit', 'Transparant', 'Grijs', 'Rood', 'Blauw'] },
+      { key: 'size',  label: 'Formaat',   options: ['Klein (2cm)', 'Standaard (3cm)', 'Groot (4cm)'] }
+    ],
+    addons: [
+      { key: 'ring_clip',      name: 'Ring/clip hardware',   price: 0.50, priceType: 'per_unit' },
+      { key: 'uv_print_logo',  name: 'UV print logo/tekst',  price: 1.50, priceType: 'per_unit' }
     ]
   },
-  button_badge: {
-    name: 'Button / Badge',
-    category: 'Promotie',
-    description: 'Full-colour buttons en badges met eigen design',
+  'keychain-premium': {
+    name: 'Sleutelhanger Premium',
+    description: 'Multi-color 3D print met UV Resin kleurdetails — voor een luxe uitstraling',
     unit: 'stuk',
-    minOrder: 25,
+    image: null,
     tiers: [
-      { min: 1,    max: 24,       price: 1.75 },
-      { min: 25,   max: 49,       price: 1.30 },
-      { min: 50,   max: 99,       price: 1.00 },
-      { min: 100,  max: 249,      price: 0.78 },
-      { min: 250,  max: 499,      price: 0.60 },
-      { min: 500,  max: 999,      price: 0.46 },
-      { min: 1000, max: Infinity, price: 0.35 }
+      { min: 1,   max: 9,        price: 5.99 },
+      { min: 10,  max: 24,       price: 5.25 },
+      { min: 25,  max: 49,       price: 4.75 },
+      { min: 50,  max: 99,       price: 4.25 },
+      { min: 100, max: 249,      price: 3.75 },
+      { min: 250, max: Infinity, price: 3.25 }
+    ],
+    selects: [
+      { key: 'kleur', label: 'Basiskleur PLA', options: ['Zwart', 'Wit', 'Zilver', 'Goud metallic'] },
+      { key: 'size',  label: 'Formaat',        options: ['Standaard (3cm)', 'Groot (4cm)'] }
+    ],
+    addons: [
+      { key: 'ring_clip',          name: 'Ring/clip hardware',   price: 0.50, priceType: 'per_unit' },
+      { key: 'premium_verpakking', name: 'Premium verpakking',   price: 2.00, priceType: 'per_unit' }
     ]
   },
-  magneet: {
-    name: 'Koelkastmagneet',
-    category: 'Promotie',
-    description: 'Full-colour koelkastmagneten op maat',
+  'uv-print-small': {
+    name: 'UV Print — Klein',
+    description: 'Volledige kleur UV Resin print met de Eufy make E1 — levensecht op elk plat oppervlak',
     unit: 'stuk',
-    minOrder: 25,
+    image: null,
     tiers: [
-      { min: 1,   max: 24,       price: 2.20 },
-      { min: 25,  max: 49,       price: 1.70 },
-      { min: 50,  max: 99,       price: 1.35 },
-      { min: 100, max: 249,      price: 1.05 },
-      { min: 250, max: 499,      price: 0.82 },
-      { min: 500, max: Infinity, price: 0.62 }
+      { min: 1,   max: 9,        price: 4.99 },
+      { min: 10,  max: 24,       price: 4.50 },
+      { min: 25,  max: 49,       price: 4.00 },
+      { min: 50,  max: 99,       price: 3.50 },
+      { min: 100, max: 249,      price: 3.00 },
+      { min: 250, max: Infinity, price: 2.75 }
+    ],
+    selects: [
+      { key: 'formaat',  label: 'Formaat',   options: ['5×5 cm', '8×8 cm', '10×10 cm'] },
+      { key: 'materiaal',label: 'Materiaal', options: ['Acryl', 'Hout', 'Metaal', 'Kunststof'] }
+    ],
+    addons: [
+      { key: 'glossy_lak', name: 'Glossy afwerklaag', price: 0.75, priceType: 'per_unit' }
     ]
   },
-  sticker_vel: {
-    name: 'Stickervellen',
-    category: 'Stickers',
-    description: 'Gepersonaliseerde stickervellen (A4, keuze uit glans/mat)',
-    unit: 'vel',
-    minOrder: 10,
-    tiers: [
-      { min: 1,   max: 9,        price: 2.95 },
-      { min: 10,  max: 24,       price: 2.20 },
-      { min: 25,  max: 49,       price: 1.75 },
-      { min: 50,  max: 99,       price: 1.40 },
-      { min: 100, max: 249,      price: 1.10 },
-      { min: 250, max: Infinity, price: 0.85 }
-    ]
-  },
-  sticker_los: {
-    name: 'Losse Stickers',
-    category: 'Stickers',
-    description: 'Individuele stickers op maat (uw eigen vorm/maat)',
+  'uv-print-medium': {
+    name: 'UV Print — Groot',
+    description: 'Grote formaten UV Resin print met de Eufy make E1 — ideaal voor displays en gifts',
     unit: 'stuk',
-    minOrder: 50,
+    image: null,
     tiers: [
-      { min: 1,    max: 49,       price: 0.95 },
-      { min: 50,   max: 99,       price: 0.65 },
-      { min: 100,  max: 249,      price: 0.48 },
-      { min: 250,  max: 499,      price: 0.35 },
-      { min: 500,  max: 999,      price: 0.26 },
-      { min: 1000, max: Infinity, price: 0.18 }
-    ]
-  },
-  visitekaartje: {
-    name: 'Visitekaartje',
-    category: 'Drukwerk',
-    description: 'Full-colour visitekaartjes, 350gr. glanscoating',
-    unit: 'stuk',
-    minOrder: 100,
-    tiers: [
-      { min: 1,    max: 99,       price: 0.45 },
-      { min: 100,  max: 249,      price: 0.28 },
-      { min: 250,  max: 499,      price: 0.18 },
-      { min: 500,  max: 999,      price: 0.12 },
-      { min: 1000, max: 2499,     price: 0.08 },
-      { min: 2500, max: Infinity, price: 0.06 }
+      { min: 1,   max: 9,        price: 8.99 },
+      { min: 10,  max: 24,       price: 8.00 },
+      { min: 25,  max: 49,       price: 7.25 },
+      { min: 50,  max: 99,       price: 6.50 },
+      { min: 100, max: 249,      price: 5.75 },
+      { min: 250, max: Infinity, price: 5.00 }
+    ],
+    selects: [
+      { key: 'formaat',  label: 'Formaat',   options: ['15×15 cm', '20×15 cm', '20×20 cm'] },
+      { key: 'materiaal',label: 'Materiaal', options: ['Acryl', 'Hout', 'Metaal', 'Glas', 'Kunststof'] }
+    ],
+    addons: [
+      { key: 'glossy_lak',  name: 'Glossy afwerklaag',       price: 1.50, priceType: 'per_unit' },
+      { key: 'staander',    name: 'Standaard/houder erbij',   price: 3.00, priceType: 'per_unit' }
     ]
   }
-};
-
-const ADDONS = {
-  ring:         { name: 'Splitring',               priceType: 'per_unit', price: 0.12 },
-  karabijn:     { name: 'Karabijnhaak',            priceType: 'per_unit', price: 0.22 },
-  dubbelzijdig: { name: 'Dubbelzijdig bedrukt',    priceType: 'per_unit', price: 0.28 },
-  pms_kleur:    { name: 'PMS / Pantone kleur',     priceType: 'per_unit', price: 0.18 },
-  cadeau_verpakking: { name: 'Cadeauverpakking',   priceType: 'per_unit', price: 0.65 },
-  glans_laminaat:    { name: 'Glans laminaat',     priceType: 'per_unit', price: 0.10 },
-  mat_laminaat:      { name: 'Mat laminaat',       priceType: 'per_unit', price: 0.10 },
-  express_48u:  { name: 'Express levering 48u',    priceType: 'flat',     price: 45.00 },
-  express_24u:  { name: 'Express levering 24u',    priceType: 'flat',     price: 75.00 },
-  ontwerp:      { name: 'Ontwerp service',         priceType: 'flat',     price: 85.00 }
 };
 
 // ─── Hulpfuncties ──────────────────────────────────────────────────────────────
@@ -145,7 +114,7 @@ function getPricePerUnit(productKey, quantity) {
   return tier ? tier.price : product.tiers[product.tiers.length - 1].price;
 }
 
-function calculateQuote(productKey, quantity, selectedAddons = []) {
+function calculateQuote(productKey, quantity, selectedAddons = [], isReturningCustomer = false) {
   const product = PRODUCTS[productKey];
   if (!product) return null;
 
@@ -157,7 +126,7 @@ function calculateQuote(productKey, quantity, selectedAddons = []) {
   const addonsBreakdown = [];
 
   for (const addonKey of selectedAddons) {
-    const addon = ADDONS[addonKey];
+    const addon = product.addons.find(a => a.key === addonKey);
     if (!addon) continue;
     const addonCost = addon.priceType === 'flat' ? addon.price : addon.price * qty;
     addonsTotal += addonCost;
@@ -168,6 +137,19 @@ function calculateQuote(productKey, quantity, selectedAddons = []) {
       unitPrice: addon.price,
       total: addonCost
     });
+  }
+
+  // Setup/design kosten: eenmalig €25, alleen bij nieuwe klanten/designs
+  const setupFeeTotal = isReturningCustomer ? 0 : SETUP_FEE.price;
+  if (!isReturningCustomer) {
+    addonsBreakdown.unshift({
+      key: SETUP_FEE.key,
+      name: SETUP_FEE.name,
+      priceType: SETUP_FEE.priceType,
+      unitPrice: SETUP_FEE.price,
+      total: SETUP_FEE.price
+    });
+    addonsTotal += setupFeeTotal;
   }
 
   const subtotal = baseTotal + addonsTotal;
@@ -221,18 +203,19 @@ app.get('/api/products', (req, res) => {
   for (const [key, product] of Object.entries(PRODUCTS)) {
     simplified[key] = {
       name: product.name,
-      category: product.category,
       description: product.description,
       unit: product.unit,
-      minOrder: product.minOrder,
-      tiers: product.tiers
+      image: product.image || null,
+      tiers: product.tiers,
+      selects: product.selects,
+      addons: product.addons
     };
   }
-  res.json({ products: simplified, addons: ADDONS });
+  res.json({ products: simplified });
 });
 
 app.post('/api/calculate', (req, res) => {
-  const { product, quantity, addons } = req.body;
+  const { product, quantity, addons, isReturningCustomer } = req.body;
 
   if (!product || !PRODUCTS[product]) {
     return res.status(400).json({ error: 'Ongeldig of ontbrekend product' });
@@ -241,21 +224,21 @@ app.post('/api/calculate', (req, res) => {
     return res.status(400).json({ error: 'Ongeldige hoeveelheid' });
   }
 
-  const result = calculateQuote(product, quantity, addons || []);
+  const result = calculateQuote(product, quantity, addons || [], !!isReturningCustomer);
   res.json(result);
 });
 
 app.post('/api/quote/pdf', async (req, res) => {
   const {
     klantNaam, klantEmail, klantBedrijf, klantTelefoon, klantAdres,
-    product, quantity, addons, opmerkingen, referentie
+    product, quantity, addons, selects, isReturningCustomer, opmerkingen, referentie
   } = req.body;
 
   if (!klantNaam || !klantEmail || !product || !quantity) {
     return res.status(400).json({ error: 'Vereiste velden ontbreken' });
   }
 
-  const quote = calculateQuote(product, quantity, addons || []);
+  const quote = calculateQuote(product, quantity, addons || [], !!isReturningCustomer);
   if (!quote) {
     return res.status(400).json({ error: 'Ongeldig product' });
   }
@@ -295,15 +278,17 @@ app.post('/api/quote/pdf', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     doc.pipe(res);
 
-    // ── Kleurenpalet ──
+    // ── Kleurenpalet (DDDrukwerk huisstijl) ──
     const C = {
-      primary:   '#D62828',  // DDDrukwerk rood
-      secondary: '#1A1A2E',  // Donker navy
-      accent:    '#F77F00',  // Oranje accent
-      light:     '#F8F8F8',  // Licht grijs
-      border:    '#E0E0E0',  // Border kleur
-      text:      '#2D2D2D',  // Hoofdtekst
-      muted:     '#6B7280',  // Muted tekst
+      primary:   '#C9A84C',  // Antiek goud
+      secondary: '#0D0D0D',  // Diep zwart
+      card:      '#1a1a1a',  // Card achtergrond
+      champagne: '#F0D080',  // Champagne accent
+      creme:     '#FAF3DC',  // Warm crème
+      light:     '#F5F5F5',  // Licht tekst
+      border:    '#C9A84C',  // Gouden border
+      text:      '#1a1a1a',  // Donkere tekst (op lichte vlakken)
+      muted:     '#666666',  // Muted tekst
       white:     '#FFFFFF'
     };
 
@@ -314,16 +299,17 @@ app.post('/api/quote/pdf', async (req, res) => {
 
     // ── Header achtergrond ──
     doc.rect(0, 0, pageW, 140).fill(C.secondary);
-    doc.rect(0, 130, pageW, 12).fill(C.primary);
+    doc.rect(0, 130, pageW, 10).fill(C.primary);
 
     // ── Logo / Bedrijfsnaam ──
-    doc.font('Helvetica-Bold').fontSize(32).fillColor(C.white)
-       .text('DDD', margin, 35, { continued: true })
-       .font('Helvetica').fontSize(32).fillColor(C.primary)
-       .text('drukwerk', { lineBreak: false });
+    doc.font('Helvetica-Bold').fontSize(30).fillColor(C.white)
+       .text('DDDRUKWERK', margin, 38);
 
-    doc.font('Helvetica').fontSize(10).fillColor('#AAAAAA')
-       .text('Gepersonaliseerd drukwerk op maat', margin, 75);
+    doc.font('Helvetica').fontSize(9).fillColor(C.primary)
+       .text('PREMIUM CUSTOM MERCHANDISE', margin, 76);
+
+    doc.font('Helvetica').fontSize(8).fillColor('#888888')
+       .text('Heemskerk, Nederland', margin, 90);
 
     // ── Contactinfo rechts in header ──
     const headerRight = pageW - margin;
@@ -400,13 +386,21 @@ app.post('/api/quote/pdf', async (req, res) => {
     tableY += 22;
 
     // ── Product rij ──
-    const rowH = 38;
+    // Bouw omschrijving op inclusief selects
+    const selectsText = selects
+      ? Object.entries(selects).map(([k, v]) => v).filter(Boolean).join(' · ')
+      : '';
+    const rowH = selectsText ? 48 : 38;
     doc.rect(margin, tableY, contentW, rowH).fillAndStroke(C.white, C.border);
 
     doc.font('Helvetica-Bold').fontSize(9.5).fillColor(C.text)
        .text(quote.product.name, colX[0], tableY + 8, { width: 220 });
     doc.font('Helvetica').fontSize(8).fillColor(C.muted)
        .text(quote.product.description, colX[0], tableY + 22, { width: 220 });
+    if (selectsText) {
+      doc.font('Helvetica').fontSize(7.5).fillColor(C.primary)
+         .text(selectsText, colX[0], tableY + 34, { width: 220 });
+    }
 
     doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
     doc.text(`${quote.quantity} ${quote.product.unit}`, colX[1], tableY + 13, { width: 75, align: 'right' });
