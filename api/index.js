@@ -40,7 +40,8 @@ const PRODUCTS = {
     name: 'Sleutelhanger Basic',
     description: '3D geprint met PLA op de Bambu Lab P1S — strak, duurzaam en volledig op maat',
     unit: 'stuk',
-    image:'/images/sleutelhanger-basic.png',   // Zet hier een Instagram-foto URL, bijv.: 'https://...'
+    setupFee: false,   // Geen setup/design kosten voor dit product
+    image:'/images/sleutelhanger-basic.png',
     tiers: [
       { min: 1,   max: 9,        price: 3.50 },
       { min: 10,  max: 24,       price: 3.00 },
@@ -189,9 +190,10 @@ function calculateQuote(productKey, quantity, selectedAddons = [], isReturningCu
     });
   }
 
-  // Setup/design kosten: eenmalig €25, alleen bij nieuwe klanten/designs
-  const setupFeeTotal = isReturningCustomer ? 0 : SETUP_FEE.price;
-  if (!isReturningCustomer) {
+  // Setup/design kosten: eenmalig €25, alleen als product het vereist én klant is nieuw
+  const productHasSetupFee = product.setupFee !== false;
+  const setupFeeTotal = (productHasSetupFee && !isReturningCustomer) ? SETUP_FEE.price : 0;
+  if (productHasSetupFee && !isReturningCustomer) {
     addonsBreakdown.unshift({
       key: SETUP_FEE.key,
       name: SETUP_FEE.name,
@@ -256,6 +258,7 @@ app.get('/api/products', (req, res) => {
       description: product.description,
       unit: product.unit,
       image: product.image || null,
+      setupFee: product.setupFee !== false,
       tiers: product.tiers,
       selects: product.selects,
       addons: product.addons

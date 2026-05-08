@@ -1500,10 +1500,19 @@ function openConfigurator(productKey) {
   state.selectedAddons = [];
   state.selectedSelects = {};
   state.isReturningCustomer = false;
+  state.quantity = 1;
+  document.getElementById('qty-input').value = 1;
+  document.getElementById('qty-slider').value = 1;
+
+  // Setup fee toggle tonen/verbergen afhankelijk van product
+  const product = state.products[productKey];
+  const hasSetupFee = product.setupFee !== false;
+  const toggle = document.getElementById('returning-toggle');
+  toggle.style.display = hasSetupFee ? 'flex' : 'none';
   const cb = document.getElementById('returning-checkbox');
   cb.checked = false;
   document.getElementById('returning-toggle').classList.remove('active');
-  document.getElementById('setup-fee-badge').style.display = 'inline-block';
+  document.getElementById('setup-fee-badge').style.display = hasSetupFee ? 'inline-block' : 'none';
 
   const product = state.products[productKey];
   document.getElementById('panel-product-name').textContent = product.name;
