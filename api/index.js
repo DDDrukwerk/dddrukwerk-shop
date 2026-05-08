@@ -45,8 +45,8 @@ const PRODUCTS = {
     tiers: [
       { min: 1,   max: 25,       price: 2.25 },
       { min: 26,  max: 50,       price: 1.90 },
-      { min: 51,  max: 75,       price: 1.50 },
-      { min: 76,  max: Infinity, price: 1.13 }
+      { min: 51,  max: 99,       price: 1.50 },
+      { min: 100, max: Infinity, price: 1.13 }
     ],
     selects: [
       { key: 'kleur', label: 'PLA kleur', options: ['Zwart', 'Wit', 'Transparant', 'Grijs', 'Rood', 'Blauw'] },
