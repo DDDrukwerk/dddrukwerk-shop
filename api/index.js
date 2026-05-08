@@ -43,12 +43,10 @@ const PRODUCTS = {
     setupFee: false,   // Geen setup/design kosten voor dit product
     image:'/images/sleutelhanger-basic.png',
     tiers: [
-      { min: 1,   max: 9,        price: 3.50 },
-      { min: 10,  max: 24,       price: 3.00 },
-      { min: 25,  max: 49,       price: 2.75 },
-      { min: 50,  max: 99,       price: 2.50 },
-      { min: 100, max: 249,      price: 2.20 },
-      { min: 250, max: Infinity, price: 2.00 }
+      { min: 1,   max: 25,       price: 2.25 },
+      { min: 26,  max: 50,       price: 1.90 },
+      { min: 51,  max: 100,      price: 1.50 },
+      { min: 101, max: Infinity, price: 1.13 }
     ],
     selects: [
       { key: 'kleur', label: 'PLA kleur', options: ['Zwart', 'Wit', 'Transparant', 'Grijs', 'Rood', 'Blauw'] },
