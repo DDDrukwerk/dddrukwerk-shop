@@ -3,11 +3,31 @@ const express = require('express');
 const PDFDocument = require('pdfkit');
 const cors = require('cors');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// ─── Rate limiting ─────────────────────────────────────────────────────────────
+// Algemeen: max 60 API-verzoeken per minuut per IP
+app.use('/api/', rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Te veel verzoeken. Probeer het over een minuut opnieuw.' }
+}));
+
+// Strenger voor PDF-generatie: max 10 offertes per uur per IP
+app.use('/api/quote/pdf', rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'U heeft het maximale aantal offertes per uur bereikt. Probeer het later opnieuw.' }
+}));
 
 // ─── Productcatalogus (exact uit dddrukwerk-shop) ─────────────────────────────
 // Staffelprijzen zijn schattingen op basis van de basisprijs — pas aan naar wens.
