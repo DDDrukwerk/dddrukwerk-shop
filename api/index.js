@@ -105,6 +105,36 @@ const PRODUCTS = {
   }
 };
 
+// ─── Cloudflare Turnstile verificatie ─────────────────────────────────────────
+
+async function verifyTurnstile(token, ip) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  // Als er geen secret is geconfigureerd, skip verificatie (lokale dev)
+  if (!secret) return { success: true, skipped: true };
+  if (!token) return { success: false, error: 'Geen CAPTCHA token ontvangen' };
+
+  const body = new URLSearchParams({
+    secret,
+    response: token,
+    ...(ip ? { remoteip: ip } : {})
+  });
+
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    });
+    const data = await res.json();
+    return data.success
+      ? { success: true }
+      : { success: false, error: 'CAPTCHA verificatie mislukt — probeer opnieuw' };
+  } catch (err) {
+    console.error('Turnstile verificatie fout:', err);
+    return { success: false, error: 'CAPTCHA kon niet worden geverifieerd' };
+  }
+}
+
 // ─── Hulpfuncties ──────────────────────────────────────────────────────────────
 
 function getPricePerUnit(productKey, quantity) {
@@ -231,11 +261,19 @@ app.post('/api/calculate', (req, res) => {
 app.post('/api/quote/pdf', async (req, res) => {
   const {
     klantNaam, klantEmail, klantBedrijf, klantTelefoon, klantAdres,
-    product, quantity, addons, selects, isReturningCustomer, opmerkingen, referentie
+    product, quantity, addons, selects, isReturningCustomer,
+    opmerkingen, referentie, turnstileToken
   } = req.body;
 
   if (!klantNaam || !klantEmail || !product || !quantity) {
     return res.status(400).json({ error: 'Vereiste velden ontbreken' });
+  }
+
+  // Cloudflare Turnstile CAPTCHA verificatie
+  const clientIp = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
+  const captcha = await verifyTurnstile(turnstileToken, clientIp);
+  if (!captcha.success) {
+    return res.status(403).json({ error: captcha.error });
   }
 
   const quote = calculateQuote(product, quantity, addons || [], !!isReturningCustomer);

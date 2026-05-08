@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Lato:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     /* ── DDDrukwerk Huisstijl (1:1 uit globals.css) ── */
     :root {
@@ -1299,6 +1300,18 @@
         </div>
       </div>
 
+      <!-- Cloudflare Turnstile CAPTCHA -->
+      <div id="turnstile-wrap" style="margin-bottom:1rem;">
+        <div class="cf-turnstile"
+             data-sitekey="1x00000000000000000000AA"
+             data-theme="dark"
+             data-callback="onTurnstileSuccess"
+             data-error-callback="onTurnstileError"
+             data-expired-callback="onTurnstileExpired">
+        </div>
+        <div id="captcha-error" style="display:none; font-size:.8rem; color:var(--color-error); font-family:Lato,sans-serif; margin-top:.35rem;"></div>
+      </div>
+
       <button class="submit-btn" id="submit-btn">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1390,8 +1403,29 @@ const state = {
   selectedAddons: [],
   selectedSelects: {},
   isReturningCustomer: false,
+  turnstileToken: null,
   calculation: null
 };
+
+// ─── Cloudflare Turnstile callbacks ──────────────────────────────────────────
+function onTurnstileSuccess(token) {
+  state.turnstileToken = token;
+  document.getElementById('captcha-error').style.display = 'none';
+  document.getElementById('submit-btn').disabled = false;
+}
+function onTurnstileError() {
+  state.turnstileToken = null;
+  const el = document.getElementById('captcha-error');
+  el.textContent = 'CAPTCHA verificatie mislukt. Ververs de pagina en probeer opnieuw.';
+  el.style.display = 'block';
+}
+function onTurnstileExpired() {
+  state.turnstileToken = null;
+  const el = document.getElementById('captcha-error');
+  el.textContent = 'CAPTCHA is verlopen. Vink opnieuw aan.';
+  el.style.display = 'block';
+  if (typeof turnstile !== 'undefined') turnstile.reset();
+}
 let debounceTimer = null;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -1701,9 +1735,10 @@ async function onSubmit() {
     opmerkingen:   document.getElementById('opmerkingen').value.trim(),
     product:       state.selectedProduct,
     quantity:      state.quantity,
-    addons:             state.selectedAddons,
-    selects:            state.selectedSelects,
-    isReturningCustomer: state.isReturningCustomer
+    addons:              state.selectedAddons,
+    selects:             state.selectedSelects,
+    isReturningCustomer: state.isReturningCustomer,
+    turnstileToken:      state.turnstileToken
   };
 
   try {
@@ -1722,6 +1757,8 @@ async function onSubmit() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    state.turnstileToken = null;
+    if (typeof turnstile !== 'undefined') turnstile.reset();
     closeConfigurator();
     showToast('Uw offerte is succesvol gegenereerd en gedownload.', 'success');
   } catch (err) {
