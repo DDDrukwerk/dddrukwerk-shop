@@ -40,7 +40,7 @@ const PRODUCTS = {
     name: 'Sleutelhanger Basic',
     description: '3D geprint met PLA op de Bambu Lab P1S — strak, duurzaam en volledig op maat',
     unit: 'stuk',
-    image: null,   // Zet hier een Instagram-foto URL, bijv.: 'https://...'
+    image:'/images/sleutelhanger-basic.png',   // Zet hier een Instagram-foto URL, bijv.: 'https://...'
     tiers: [
       { min: 1,   max: 9,        price: 3.50 },
       { min: 10,  max: 24,       price: 3.00 },
@@ -62,7 +62,7 @@ const PRODUCTS = {
     name: 'Sleutelhanger Premium',
     description: 'Multi-color 3D print met UV Resin kleurdetails — voor een luxe uitstraling',
     unit: 'stuk',
-    image: null,
+    image: '/images/sleutelhanger-premium.png',
     tiers: [
       { min: 1,   max: 9,        price: 5.99 },
       { min: 10,  max: 24,       price: 5.25 },
@@ -84,7 +84,7 @@ const PRODUCTS = {
     name: 'UV Print — Klein',
     description: 'Volledige kleur UV Resin print met de Eufy make E1 — levensecht op elk plat oppervlak',
     unit: 'stuk',
-    image: null,
+    image: '/images/uv-print-klein.png',
     tiers: [
       { min: 1,   max: 9,        price: 4.99 },
       { min: 10,  max: 24,       price: 4.50 },
