@@ -1522,7 +1522,6 @@ function openConfigurator(productKey) {
   document.getElementById('returning-toggle').classList.remove('active');
   document.getElementById('setup-fee-badge').style.display = hasSetupFee ? 'inline-block' : 'none';
 
-  const product = state.products[productKey];
   document.getElementById('panel-product-name').textContent = product.name;
 
   // Herstel naar stap 1
