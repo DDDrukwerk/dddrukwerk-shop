@@ -85,6 +85,7 @@ const PRODUCTS = {
     description: 'Volledige kleur UV Resin print met de Eufy make E1 — levensecht op elk plat oppervlak',
     unit: 'stuk',
     image: '/images/uv-print-klein.png',
+    // Basistiers gelden voor 5×5 cm — grotere formaten hebben een priceModifier per stuk
     // Kostprijs: €0.50-1.50 substraat + €0.50-1.20 UV-inkt + ~10 min arbeid
     // Marge: 38-44%
     tiers: [
@@ -94,8 +95,12 @@ const PRODUCTS = {
       { min: 100, max: Infinity, price: 3.00 }   // kostprijs ~€1.75
     ],
     selects: [
-      { key: 'formaat',  label: 'Formaat',   options: ['5×5 cm', '8×8 cm', '10×10 cm'] },
-      { key: 'materiaal',label: 'Materiaal', options: ['Acryl', 'Hout', 'Metaal', 'Kunststof'] }
+      { key: 'formaat', label: 'Formaat', options: [
+        { value: '5×5 cm',   priceModifier: 0    },   // basisprijs
+        { value: '8×8 cm',   priceModifier: 2.50 },   // +€2,50/stuk
+        { value: '10×10 cm', priceModifier: 4.50 }    // +€4,50/stuk
+      ]},
+      { key: 'materiaal', label: 'Materiaal', options: ['Acryl', 'Hout', 'Metaal', 'Kunststof'] }
     ],
     addons: [
       { key: 'glossy_lak', name: 'Glossy afwerklaag', price: 0.75, priceType: 'per_unit' }
@@ -164,12 +169,30 @@ function getPricePerUnit(productKey, quantity) {
   return tier ? tier.price : product.tiers[product.tiers.length - 1].price;
 }
 
-function calculateQuote(productKey, quantity, selectedAddons = [], isReturningCustomer = false) {
+// Bereken de totale prijstoeslag op basis van gekozen selects (bijv. groter formaat)
+function getSelectsModifier(product, selectedSelects) {
+  let modifier = 0;
+  for (const [key, selectedValue] of Object.entries(selectedSelects || {})) {
+    const select = product.selects?.find(s => s.key === key);
+    if (!select) continue;
+    const option = select.options.find(o =>
+      typeof o === 'object' ? o.value === selectedValue : o === selectedValue
+    );
+    if (option && typeof option === 'object' && option.priceModifier) {
+      modifier += option.priceModifier;
+    }
+  }
+  return modifier;
+}
+
+function calculateQuote(productKey, quantity, selectedAddons = [], isReturningCustomer = false, selectedSelects = {}) {
   const product = PRODUCTS[productKey];
   if (!product) return null;
 
   const qty = Math.max(1, parseInt(quantity) || 1);
-  const pricePerUnit = getPricePerUnit(productKey, qty);
+  const basePricePerUnit = getPricePerUnit(productKey, qty);
+  const selectsModifier = getSelectsModifier(product, selectedSelects);
+  const pricePerUnit = basePricePerUnit + selectsModifier;
   const baseTotal = pricePerUnit * qty;
 
   let addonsTotal = 0;
@@ -276,7 +299,7 @@ app.post('/api/calculate', (req, res) => {
     return res.status(400).json({ error: 'Ongeldige hoeveelheid' });
   }
 
-  const result = calculateQuote(product, quantity, addons || [], !!isReturningCustomer);
+  const result = calculateQuote(product, quantity, addons || [], !!isReturningCustomer, selects || {});
   res.json(result);
 });
 
@@ -298,7 +321,7 @@ app.post('/api/quote/pdf', async (req, res) => {
     return res.status(403).json({ error: captcha.error });
   }
 
-  const quote = calculateQuote(product, quantity, addons || [], !!isReturningCustomer);
+  const quote = calculateQuote(product, quantity, addons || [], !!isReturningCustomer, selects || {});
   if (!quote) {
     return res.status(400).json({ error: 'Ongeldig product' });
   }

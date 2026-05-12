@@ -1565,13 +1565,20 @@ function renderSelects() {
     const select = document.createElement('select');
     sel.options.forEach(opt => {
       const option = document.createElement('option');
-      option.value = opt;
-      option.textContent = opt;
+      const val = typeof opt === 'object' ? opt.value : opt;
+      option.value = val;
+      if (typeof opt === 'object' && opt.priceModifier > 0) {
+        option.textContent = `${val} (+€${opt.priceModifier.toFixed(2).replace('.', ',')} /stuk)`;
+      } else {
+        option.textContent = val;
+      }
       select.appendChild(option);
     });
-    state.selectedSelects[sel.key] = sel.options[0];
+    const firstVal = typeof sel.options[0] === 'object' ? sel.options[0].value : sel.options[0];
+    state.selectedSelects[sel.key] = firstVal;
     select.addEventListener('change', e => {
       state.selectedSelects[sel.key] = e.target.value;
+      calculate();
     });
     group.appendChild(label);
     group.appendChild(select);
