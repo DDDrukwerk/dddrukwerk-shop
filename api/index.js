@@ -6,6 +6,7 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+app.set('trust proxy', 1); // Vercel zit achter een proxy — nodig voor correcte req.ip
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..', 'public')));

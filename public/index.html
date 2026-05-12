@@ -1446,13 +1446,22 @@ let debounceTimer = null;
 async function init() {
   try {
     const res = await fetch('/api/products');
-    if (!res.ok) throw new Error('API niet bereikbaar');
+    if (!res.ok) throw new Error(`API fout ${res.status}`);
     const data = await res.json();
+    if (!data.products || Object.keys(data.products).length === 0) {
+      throw new Error('Geen producten ontvangen');
+    }
+    // Herstel Infinity (JSON serialiseert dit als null)
+    for (const product of Object.values(data.products)) {
+      product.tiers = product.tiers.map(t => ({ ...t, max: t.max === null ? Infinity : t.max }));
+    }
     state.products = data.products;
     renderProductGrid();
     bindEvents();
   } catch (err) {
-    showToast('Kon producten niet laden: ' + err.message, 'error');
+    console.error('Init fout:', err);
+    document.getElementById('products-grid').innerHTML =
+      `<p style="color:#C9A84C;text-align:center;padding:2rem;">Producten konden niet worden geladen (${err.message}). Ververs de pagina.</p>`;
   }
 }
 
@@ -1603,9 +1612,10 @@ function renderStaffel(productKey, qty) {
   tbody.innerHTML = '';
   const topPrice = product.tiers[0].price;
   product.tiers.forEach(tier => {
-    const active = qty >= tier.min && (tier.max === Infinity ? true : qty <= tier.max);
+    const isLast = tier.max === Infinity || tier.max === null;
+    const active = qty >= tier.min && (isLast ? true : qty <= tier.max);
     const saving = topPrice > tier.price ? `${Math.round((1 - tier.price / topPrice) * 100)}%` : '—';
-    const label = tier.max === Infinity ? `${tier.min}+` : `${tier.min}–${tier.max}`;
+    const label = isLast ? `${tier.min}+` : `${tier.min}–${tier.max}`;
     const tr = document.createElement('tr');
     if (active) tr.className = 'current-tier';
     tr.innerHTML = `<td>${label}</td><td>€${tier.price.toFixed(2).replace('.', ',')}</td><td>${saving}</td>`;
