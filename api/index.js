@@ -368,7 +368,7 @@ app.post('/api/quote/pdf', async (req, res) => {
        .text('PREMIUM CUSTOM MERCHANDISE', margin, 76);
 
     doc.font('Helvetica').fontSize(8).fillColor('#888888')
-       .text('Heemskerk, Nederland', margin, 90);
+       .text('Delfzijl, Nederland', margin, 90);
 
     // ── Contactinfo rechts in header ──
     const headerRight = pageW - margin;
