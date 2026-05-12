@@ -402,12 +402,22 @@
     .product-price {
       font-size: .95rem;
       color: var(--color-antiek-goud);
-      margin-bottom: 1.5rem;
+      margin-bottom: .4rem;
     }
 
     .product-price strong {
       font-size: 1.3rem;
       color: var(--color-champagne);
+    }
+
+    .product-bulk-label {
+      font-size: .78rem;
+      color: #888;
+      margin-bottom: 1.2rem;
+    }
+
+    .product-bulk-label strong {
+      color: var(--color-antiek-goud);
     }
 
     .select-btn {
@@ -1477,7 +1487,11 @@ function renderProductGrid() {
   const grid = document.getElementById('products-grid');
   grid.innerHTML = '';
   for (const [key, product] of Object.entries(state.products)) {
-    const minPrice = product.tiers[product.tiers.length - 1].price;
+    const startPrice = product.tiers[0].price;
+    const bulkTier   = product.tiers[product.tiers.length - 1];
+    const bulkLabel  = bulkTier.min < 999
+      ? `Staffelkorting tot <strong>€${bulkTier.price.toFixed(2).replace('.', ',')}</strong> bij ${bulkTier.min}+ stuks`
+      : '';
     const card = document.createElement('div');
     card.className = 'product-card';
     card.dataset.key = key;
@@ -1490,7 +1504,8 @@ function renderProductGrid() {
       ${mediaHTML}
       <h3>${product.name}</h3>
       <p>${product.description}</p>
-      <div class="product-price">Vanaf <strong>€${minPrice.toFixed(2).replace('.', ',')}</strong> / ${product.unit}</div>
+      <div class="product-price">Vanaf <strong>€${startPrice.toFixed(2).replace('.', ',')}</strong> / ${product.unit}</div>
+      ${bulkLabel ? `<div class="product-bulk-label">${bulkLabel}</div>` : ''}
       <button class="select-btn">Configureer →</button>
     `;
     card.querySelector('.select-btn').addEventListener('click', (e) => {
