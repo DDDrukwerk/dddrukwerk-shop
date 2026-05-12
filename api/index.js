@@ -62,13 +62,13 @@ const PRODUCTS = {
     description: 'Multi-color 3D print met UV Resin kleurdetails — voor een luxe uitstraling',
     unit: 'stuk',
     image: '/images/sleutelhanger-premium.png',
+    // Kostprijs: ~€0.70 materiaal + UV-inkt, ~15-25 min arbeid per stuk
+    // Marge: 38-45%
     tiers: [
-      { min: 1,   max: 9,        price: 5.99 },
-      { min: 10,  max: 24,       price: 5.25 },
-      { min: 25,  max: 49,       price: 4.75 },
-      { min: 50,  max: 99,       price: 4.25 },
-      { min: 100, max: 249,      price: 3.75 },
-      { min: 250, max: Infinity, price: 3.25 }
+      { min: 1,   max: 25,       price: 7.50 },  // kostprijs ~€4.40
+      { min: 26,  max: 50,       price: 6.00 },  // kostprijs ~€3.50
+      { min: 51,  max: 99,       price: 4.75 },  // kostprijs ~€2.75
+      { min: 100, max: Infinity, price: 3.75 }   // kostprijs ~€2.20
     ],
     selects: [
       { key: 'kleur', label: 'Basiskleur PLA', options: ['Zwart', 'Wit', 'Zilver', 'Goud metallic'] },
@@ -84,13 +84,13 @@ const PRODUCTS = {
     description: 'Volledige kleur UV Resin print met de Eufy make E1 — levensecht op elk plat oppervlak',
     unit: 'stuk',
     image: '/images/uv-print-klein.png',
+    // Kostprijs: €0.50-1.50 substraat + €0.50-1.20 UV-inkt + ~10 min arbeid
+    // Marge: 38-44%
     tiers: [
-      { min: 1,   max: 9,        price: 4.99 },
-      { min: 10,  max: 24,       price: 4.50 },
-      { min: 25,  max: 49,       price: 4.00 },
-      { min: 50,  max: 99,       price: 3.50 },
-      { min: 100, max: 249,      price: 3.00 },
-      { min: 250, max: Infinity, price: 2.75 }
+      { min: 1,   max: 25,       price: 5.50 },  // kostprijs ~€3.20
+      { min: 26,  max: 50,       price: 4.50 },  // kostprijs ~€2.60
+      { min: 51,  max: 99,       price: 3.75 },  // kostprijs ~€2.15
+      { min: 100, max: Infinity, price: 3.00 }   // kostprijs ~€1.75
     ],
     selects: [
       { key: 'formaat',  label: 'Formaat',   options: ['5×5 cm', '8×8 cm', '10×10 cm'] },
@@ -105,13 +105,13 @@ const PRODUCTS = {
     description: 'Grote formaten UV Resin print met de Eufy make E1 — ideaal voor displays en gifts',
     unit: 'stuk',
     image: null,
+    // Kostprijs: €2-5 substraat + €2-4 UV-inkt (groter oppervlak) + ~20 min arbeid
+    // Marge: 40-46%
     tiers: [
-      { min: 1,   max: 9,        price: 8.99 },
-      { min: 10,  max: 24,       price: 8.00 },
-      { min: 25,  max: 49,       price: 7.25 },
-      { min: 50,  max: 99,       price: 6.50 },
-      { min: 100, max: 249,      price: 5.75 },
-      { min: 250, max: Infinity, price: 5.00 }
+      { min: 1,   max: 25,       price: 12.50 }, // kostprijs ~€7.25
+      { min: 26,  max: 50,       price: 10.50 }, // kostprijs ~€6.00
+      { min: 51,  max: 99,       price: 8.75 },  // kostprijs ~€5.00
+      { min: 100, max: Infinity, price: 7.25 }   // kostprijs ~€4.15
     ],
     selects: [
       { key: 'formaat',  label: 'Formaat',   options: ['15×15 cm', '20×15 cm', '20×20 cm'] },
