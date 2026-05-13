@@ -451,9 +451,10 @@ app.post('/api/quote/pdf', async (req, res) => {
     let tableY = 280;
 
     doc.rect(margin, tableY, contentW, 22).fill(C.secondary);
-    // 4 kolommen: Omschrijving(230) | Aantal(85) | Prijs/stuk(90) | Totaal(90)
-    const colX = [margin + 8, margin + 245, margin + 335, margin + 425];
-    const colW  = [230, 80, 85, 85];
+    // 4 kolommen binnen contentW (505px): Omschrijving | Aantal | Prijs/stuk | Totaal
+    // colX is absolute x; colW is breedte per kolom
+    const colX = [margin + 8, margin + 238, margin + 323, margin + 413];
+    const colW  = [222, 78, 84, 92];
     const colHeaders = ['Omschrijving', 'Aantal', 'Prijs/stuk', 'Totaal'];
     doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C.white);
     colHeaders.forEach((h, i) => {
@@ -467,16 +468,16 @@ app.post('/api/quote/pdf', async (req, res) => {
     const selectsText = selects
       ? Object.entries(selects).map(([k, v]) => v).filter(Boolean).join(' · ')
       : '';
-    const rowH = selectsText ? 52 : 40;
+    const rowH = selectsText ? 56 : 42;
     doc.rect(margin, tableY, contentW, rowH).fillAndStroke(C.white, C.border);
 
     doc.font('Helvetica-Bold').fontSize(9.5).fillColor(C.text)
        .text(quote.product.name, colX[0], tableY + 8, { width: colW[0] });
-    doc.font('Helvetica').fontSize(8).fillColor(C.muted)
-       .text(quote.product.description, colX[0], tableY + 22, { width: colW[0], lineBreak: false });
+    doc.font('Helvetica').fontSize(7.5).fillColor(C.muted)
+       .text(quote.product.description, colX[0], tableY + 22, { width: colW[0], lineBreak: false, ellipsis: true });
     if (selectsText) {
       doc.font('Helvetica').fontSize(7.5).fillColor(C.primary)
-         .text(selectsText, colX[0], tableY + 36, { width: colW[0] });
+         .text(selectsText, colX[0], tableY + 38, { width: colW[0], lineBreak: false, ellipsis: true });
     }
 
     const midY = tableY + Math.round(rowH / 2) - 5;
@@ -492,8 +493,8 @@ app.post('/api/quote/pdf', async (req, res) => {
       const bg = idx % 2 === 0 ? '#FAFAFA' : C.white;
       doc.rect(margin, tableY, contentW, 26).fillAndStroke(bg, C.border);
 
-      doc.font('Helvetica').fontSize(9).fillColor(C.text)
-         .text(`+ ${addon.name}`, colX[0] + 8, tableY + 8, { width: colW[0] - 8 });
+      doc.font('Helvetica').fontSize(8.5).fillColor(C.text)
+         .text(`+ ${addon.name}`, colX[0] + 8, tableY + 9, { width: colW[0] - 8, lineBreak: false, ellipsis: true });
 
       if (addon.priceType === 'flat') {
         doc.font('Helvetica').fontSize(8.5).fillColor(C.muted)
