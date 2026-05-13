@@ -334,7 +334,7 @@ app.post('/api/quote/pdf', async (req, res) => {
     email:   process.env.COMPANY_EMAIL   || 'info@dddrukwerk.nl',
     website: process.env.COMPANY_WEBSITE || 'www.dddrukwerk.nl',
     kvk:     process.env.COMPANY_KVK     || '12345678',
-    btw:     process.env.COMPANY_BTW     || 'NL123456789B01',
+    btw:     process.env.COMPANY_BTW     || 'NL005288720B75',
     iban:    process.env.COMPANY_IBAN    || 'NL12 ABCD 0123 4567 89'
   };
 
@@ -451,39 +451,39 @@ app.post('/api/quote/pdf', async (req, res) => {
     let tableY = 280;
 
     doc.rect(margin, tableY, contentW, 22).fill(C.secondary);
-    const colX = [margin + 8, margin + 230, margin + 310, margin + 390, margin + 480];
-    const colHeaders = ['Omschrijving', 'Aantal', 'Prijs/stuk', 'Subtotaal', 'Totaal'];
+    // 4 kolommen: Omschrijving(230) | Aantal(85) | Prijs/stuk(90) | Totaal(90)
+    const colX = [margin + 8, margin + 245, margin + 335, margin + 425];
+    const colW  = [230, 80, 85, 85];
+    const colHeaders = ['Omschrijving', 'Aantal', 'Prijs/stuk', 'Totaal'];
     doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C.white);
     colHeaders.forEach((h, i) => {
       const align = i === 0 ? 'left' : 'right';
-      const w = i === 0 ? 220 : 75;
-      doc.text(h, colX[i], tableY + 7, { width: w, align });
+      doc.text(h, colX[i], tableY + 7, { width: colW[i], align });
     });
 
     tableY += 22;
 
     // ── Product rij ──
-    // Bouw omschrijving op inclusief selects
     const selectsText = selects
       ? Object.entries(selects).map(([k, v]) => v).filter(Boolean).join(' · ')
       : '';
-    const rowH = selectsText ? 48 : 38;
+    const rowH = selectsText ? 52 : 40;
     doc.rect(margin, tableY, contentW, rowH).fillAndStroke(C.white, C.border);
 
     doc.font('Helvetica-Bold').fontSize(9.5).fillColor(C.text)
-       .text(quote.product.name, colX[0], tableY + 8, { width: 220 });
+       .text(quote.product.name, colX[0], tableY + 8, { width: colW[0] });
     doc.font('Helvetica').fontSize(8).fillColor(C.muted)
-       .text(quote.product.description, colX[0], tableY + 22, { width: 220 });
+       .text(quote.product.description, colX[0], tableY + 22, { width: colW[0], lineBreak: false });
     if (selectsText) {
       doc.font('Helvetica').fontSize(7.5).fillColor(C.primary)
-         .text(selectsText, colX[0], tableY + 34, { width: 220 });
+         .text(selectsText, colX[0], tableY + 36, { width: colW[0] });
     }
 
+    const midY = tableY + Math.round(rowH / 2) - 5;
     doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
-    doc.text(`${quote.quantity} ${quote.product.unit}`, colX[1], tableY + 13, { width: 75, align: 'right' });
-    doc.text(formatCurrency(quote.pricePerUnit), colX[2], tableY + 13, { width: 75, align: 'right' });
-    doc.text(formatCurrency(quote.baseTotal), colX[3], tableY + 13, { width: 75, align: 'right' });
-    doc.text(formatCurrency(quote.baseTotal), colX[4], tableY + 13, { width: 75 - 8, align: 'right' });
+    doc.text(`${quote.quantity} ${quote.product.unit}`, colX[1], midY, { width: colW[1], align: 'right' });
+    doc.text(formatCurrency(quote.pricePerUnit),        colX[2], midY, { width: colW[2], align: 'right' });
+    doc.text(formatCurrency(quote.baseTotal),           colX[3], midY, { width: colW[3], align: 'right' });
 
     tableY += rowH;
 
@@ -493,20 +493,19 @@ app.post('/api/quote/pdf', async (req, res) => {
       doc.rect(margin, tableY, contentW, 26).fillAndStroke(bg, C.border);
 
       doc.font('Helvetica').fontSize(9).fillColor(C.text)
-         .text(`+ ${addon.name}`, colX[0] + 8, tableY + 8, { width: 210 });
+         .text(`+ ${addon.name}`, colX[0] + 8, tableY + 8, { width: colW[0] - 8 });
 
       if (addon.priceType === 'flat') {
         doc.font('Helvetica').fontSize(8.5).fillColor(C.muted)
-           .text('vast bedrag', colX[1], tableY + 9, { width: 75, align: 'right' });
-        doc.text('—', colX[2], tableY + 9, { width: 75, align: 'right' });
+           .text('vast bedrag', colX[1], tableY + 9, { width: colW[1], align: 'right' });
+        doc.text('—', colX[2], tableY + 9, { width: colW[2], align: 'right' });
       } else {
         doc.font('Helvetica').fontSize(8.5).fillColor(C.muted);
-        doc.text(`${quote.quantity}×`, colX[1], tableY + 9, { width: 75, align: 'right' });
-        doc.text(formatCurrency(addon.unitPrice), colX[2], tableY + 9, { width: 75, align: 'right' });
+        doc.text(`${quote.quantity}×`, colX[1], tableY + 9, { width: colW[1], align: 'right' });
+        doc.text(formatCurrency(addon.unitPrice), colX[2], tableY + 9, { width: colW[2], align: 'right' });
       }
       doc.font('Helvetica').fontSize(8.5).fillColor(C.text)
-         .text(formatCurrency(addon.total), colX[3], tableY + 9, { width: 75, align: 'right' });
-      doc.text(formatCurrency(addon.total), colX[4], tableY + 9, { width: 75 - 8, align: 'right' });
+         .text(formatCurrency(addon.total), colX[3], tableY + 9, { width: colW[3], align: 'right' });
 
       tableY += 26;
     });
