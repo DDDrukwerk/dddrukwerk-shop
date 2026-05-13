@@ -3,6 +3,7 @@ const express = require('express');
 const PDFDocument = require('pdfkit');
 const cors = require('cors');
 const path = require('path');
+const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -44,10 +45,10 @@ const PRODUCTS = {
     setupFee: false,   // Geen setup/design kosten voor dit product
     image:'/images/sleutelhanger-basic.png',
     tiers: [
-      { min: 1,   max: 25,       price: 2.25 },
-      { min: 26,  max: 50,       price: 1.90 },
-      { min: 51,  max: 99,       price: 1.50 },
-      { min: 100, max: Infinity, price: 1.13 }
+      { min: 1,   max: 25,       price: 5.75 },
+      { min: 26,  max: 50,       price: 4.95 },
+      { min: 51,  max: 99,       price: 3.95 },
+      { min: 100, max: Infinity, price: 3.15 }
     ],
     selects: [
       { key: 'kleur', label: 'PLA kleur', options: ['Zwart', 'Wit', 'Transparant', 'Grijs', 'Rood', 'Blauw'] },
@@ -66,10 +67,10 @@ const PRODUCTS = {
     // Kostprijs: ~€0.70 materiaal + UV-inkt, ~15-25 min arbeid per stuk
     // Marge: 38-45%
     tiers: [
-      { min: 1,   max: 25,       price: 7.50 },  // kostprijs ~€4.40
-      { min: 26,  max: 50,       price: 6.00 },  // kostprijs ~€3.50
-      { min: 51,  max: 99,       price: 4.75 },  // kostprijs ~€2.75
-      { min: 100, max: Infinity, price: 3.75 }   // kostprijs ~€2.20
+      { min: 1,   max: 25,       price: 8.00 },
+      { min: 26,  max: 50,       price: 6.75 },
+      { min: 51,  max: 99,       price: 5.50 },
+      { min: 100, max: Infinity, price: 4.25 }
     ],
     selects: [
       { key: 'kleur', label: 'Basiskleur PLA', options: ['Zwart', 'Wit', 'Zilver', 'Goud metallic'] },
@@ -89,16 +90,16 @@ const PRODUCTS = {
     // Kostprijs: €0.50-1.50 substraat + €0.50-1.20 UV-inkt + ~10 min arbeid
     // Marge: 38-44%
     tiers: [
-      { min: 1,   max: 25,       price: 5.50 },  // kostprijs ~€3.20
-      { min: 26,  max: 50,       price: 4.50 },  // kostprijs ~€2.60
-      { min: 51,  max: 99,       price: 3.75 },  // kostprijs ~€2.15
-      { min: 100, max: Infinity, price: 3.00 }   // kostprijs ~€1.75
+      { min: 1,   max: 25,       price: 6.75 },
+      { min: 26,  max: 50,       price: 5.75 },
+      { min: 51,  max: 99,       price: 4.75 },
+      { min: 100, max: Infinity, price: 3.95 }
     ],
     selects: [
       { key: 'formaat', label: 'Formaat', options: [
-        { value: '5×5 cm',   priceModifier: 0    },   // basisprijs
-        { value: '8×8 cm',   priceModifier: 2.50 },   // +€2,50/stuk
-        { value: '10×10 cm', priceModifier: 4.50 }    // +€4,50/stuk
+        { value: '5×5 cm',   priceModifier: 0    },
+        { value: '8×8 cm',   priceModifier: 2.25 },
+        { value: '10×10 cm', priceModifier: 5.40 }
       ]},
       { key: 'materiaal', label: 'Materiaal', options: ['Acryl', 'Hout', 'Metaal', 'Kunststof'] }
     ],
@@ -114,10 +115,10 @@ const PRODUCTS = {
     // Kostprijs: €2-5 substraat + €2-4 UV-inkt (groter oppervlak) + ~20 min arbeid
     // Marge: 40-46%
     tiers: [
-      { min: 1,   max: 25,       price: 12.50 }, // kostprijs ~€7.25
-      { min: 26,  max: 50,       price: 10.50 }, // kostprijs ~€6.00
-      { min: 51,  max: 99,       price: 8.75 },  // kostprijs ~€5.00
-      { min: 100, max: Infinity, price: 7.25 }   // kostprijs ~€4.15
+      { min: 1,   max: 25,       price: 13.50 },
+      { min: 26,  max: 50,       price: 11.25 },
+      { min: 51,  max: 99,       price: 9.45 },
+      { min: 100, max: Infinity, price: 7.65 }
     ],
     selects: [
       { key: 'formaat',  label: 'Formaat',   options: ['15×15 cm', '20×15 cm', '20×20 cm'] },
@@ -290,7 +291,7 @@ app.get('/api/products', (req, res) => {
 });
 
 app.post('/api/calculate', (req, res) => {
-  const { product, quantity, addons, isReturningCustomer } = req.body;
+  const { product, quantity, addons, selects, isReturningCustomer } = req.body;
 
   if (!product || !PRODUCTS[product]) {
     return res.status(400).json({ error: 'Ongeldig of ontbrekend product' });
@@ -312,13 +313,6 @@ app.post('/api/quote/pdf', async (req, res) => {
 
   if (!klantNaam || !klantEmail || !product || !quantity) {
     return res.status(400).json({ error: 'Vereiste velden ontbreken' });
-  }
-
-  // Cloudflare Turnstile CAPTCHA verificatie
-  const clientIp = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.ip;
-  const captcha = await verifyTurnstile(turnstileToken, clientIp);
-  if (!captcha.success) {
-    return res.status(403).json({ error: captcha.error });
   }
 
   const quote = calculateQuote(product, quantity, addons || [], !!isReturningCustomer, selects || {});
@@ -601,7 +595,117 @@ app.post('/api/quote/pdf', async (req, res) => {
   }
 });
 
+// ─── Rabo OmniKassa betaalintegratie ──────────────────────────────────────────
+
+const RABO_BASE = 'https://betalen.rabobank.nl/omnikassa-api-sandbox';
+
+async function raboGetToken() {
+  const res = await fetch(`${RABO_BASE}/gatekeeper/refresh`, {
+    headers: { 'Authorization': `Bearer ${process.env.RABO_REFRESH_TOKEN}` }
+  });
+  if (!res.ok) throw new Error(`Rabo token fout: ${res.status}`);
+  const data = await res.json();
+  return data.token;
+}
+
+async function raboCreateOrder({ merchantOrderId, amountCents, description, returnUrl, webhookUrl, klantNaam, klantEmail, productNaam, quantity }) {
+  const token = await raboGetToken();
+  const amountInt = Math.round(amountCents);
+  const body = {
+    merchantOrderId,
+    amount:           { currency: 'EUR', amount: amountInt },
+    merchantReturnUrl: returnUrl,
+    webhookUrl,
+    timestamp: new Date().toISOString(),
+    orderItems: [{
+      id:       '1',
+      name:     productNaam,
+      quantity: 1,
+      amount:   { currency: 'EUR', amount: amountInt }
+    }]
+  };
+  console.log('Rabo order body:', JSON.stringify(body, null, 2));
+  const res = await fetch(`${RABO_BASE}/order/server/api/v2/order`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body:    JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Rabo order fout: ${res.status} — ${err}`);
+  }
+  return await res.json();
+}
+
+function raboVerifyWebhook(body) {
+  const key = Buffer.from(process.env.RABO_SIGNING_KEY, 'base64');
+  const msg = `${body.expiry}:${body.eventName}:${body.poiId}`;
+  const expected = crypto.createHmac('sha256', key).update(msg).digest('base64');
+  return body.authentication === expected;
+}
+
+app.get('/api/payment/available', (req, res) => {
+  res.json({ available: !!(process.env.RABO_REFRESH_TOKEN && process.env.RABO_SIGNING_KEY) });
+});
+
+app.post('/api/payment/create', async (req, res) => {
+  if (!process.env.RABO_REFRESH_TOKEN) {
+    return res.status(503).json({ error: 'Online betalen is nog niet beschikbaar.' });
+  }
+  const { product, quantity, addons, selects, isReturningCustomer,
+          klantNaam, klantEmail, turnstileToken } = req.body;
+
+  if (!product || !PRODUCTS[product] || !quantity || !klantNaam || !klantEmail) {
+    return res.status(400).json({ error: 'Ontbrekende velden' });
+  }
+
+  const calc = calculateQuote(product, quantity, addons || [], !!isReturningCustomer, selects || {});
+  if (!calc) return res.status(400).json({ error: 'Berekening mislukt' });
+
+  const merchantOrderId = `DDQ${Date.now()}`;
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://dddrukwerk-shop.vercel.app';
+
+  try {
+    const order = await raboCreateOrder({
+      merchantOrderId,
+      amountCents:  Math.round(calc.total * 100),
+      description:  `DDDrukwerk — ${calc.product.name} x${quantity}`,
+      returnUrl:    `${baseUrl}/bedankt?order=${merchantOrderId}`,
+      webhookUrl:   `${baseUrl}/api/payment/webhook`,
+      klantNaam,
+      klantEmail,
+      productNaam:  calc.product.name,
+      quantity
+    });
+    res.json({ redirectUrl: order.redirectUrl, merchantOrderId });
+  } catch (err) {
+    console.error('Betaling aanmaken mislukt:', err.message);
+    res.status(500).json({ error: 'Betaling kon niet worden aangemaakt. Probeer het opnieuw.' });
+  }
+});
+
+app.post('/api/payment/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  try {
+    const body = JSON.parse(req.body.toString());
+    if (!raboVerifyWebhook(body)) {
+      console.error('Webhook: ongeldige handtekening');
+      return res.status(401).send('Ongeldige handtekening');
+    }
+    console.log(`Betaling webhook: ${body.eventName}`);
+    res.status(200).send('OK');
+  } catch (err) {
+    console.error('Webhook fout:', err.message);
+    res.status(500).send('Fout');
+  }
+});
+
 // ─── Statische bestanden fallback ─────────────────────────────────────────────
+
+app.get('/bedankt', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'bedankt.html'));
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));

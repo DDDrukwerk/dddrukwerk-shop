@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bestelling ontvangen — DDDrukwerk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0D0D0D;
+      color: #F7F3E9;
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.15em;
+      color: #C9A84C;
+      margin-bottom: 3rem;
+    }
+    .card {
+      background: #1A1A1A;
+      border: 1px solid #2A2A2A;
+      border-top: 3px solid #C9A84C;
+      border-radius: 4px;
+      padding: 3rem 2.5rem;
+      max-width: 520px;
+      width: 100%;
+    }
+    .icon {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      color: #C9A84C;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+    p {
+      color: #A09070;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    .order-id {
+      background: #0D0D0D;
+      border: 1px solid #2A2A2A;
+      border-radius: 4px;
+      padding: 0.75rem 1.25rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #C9A84C;
+      margin: 1.5rem 0;
+      word-break: break-all;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.85rem 2rem;
+      background: #C9A84C;
+      color: #0D0D0D;
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+    .btn:hover { background: #E0BC5A; }
+  </style>
+</head>
+<body>
+  <div class="logo">DDDRUKWERK</div>
+  <div class="card">
+    <div class="icon">✅</div>
+    <h1>Betaling ontvangen</h1>
+    <p>Bedankt voor je bestelling! Je betaling is bevestigd en we gaan direct aan de slag.</p>
+    <p>Je ontvangt een bevestiging op het opgegeven e-mailadres. Bij vragen kun je altijd contact met ons opnemen.</p>
+    <div class="order-id" id="order-ref">Verwerken...</div>
+    <p style="font-size:0.8rem; color:#666;">Bewaar dit ordernummer voor je administratie.</p>
+    <a href="/" class="btn">Nieuwe bestelling</a>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const order = params.get('order');
+    document.getElementById('order-ref').textContent = order ? `Ordernummer: ${order}` : 'Ordernummer onbekend';
+  </script>
+</body>
+</html>
