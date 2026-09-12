@@ -128,6 +128,33 @@ const PRODUCTS = {
       { key: 'glossy_lak',  name: 'Glossy afwerklaag',       price: 1.50, priceType: 'per_unit' },
       { key: 'staander',    name: 'Standaard/houder erbij',   price: 3.00, priceType: 'per_unit' }
     ]
+  },
+  'tandenborstelbeker': {
+    name: 'Tandenborstelbeker',
+    description: 'Beker voor elektrische tandenborstels met geribbelde buitenkant en 3 steunpinnetjes op de bodem — je borstels blijven droog en raken de bodem niet',
+    unit: 'stuk',
+    setupFee: false,   // Vast productontwerp, geen eenmalige designkosten
+    image: null,
+    // Kostprijs: ~€1.50-2.50 materiaal (PETG/PLA) + ~4-6u printtijd op de Bambu Lab P1S
+    // Prijzen zijn schattingen — pas aan naar wens.
+    tiers: [
+      { min: 1,   max: 25,       price: 14.95 },
+      { min: 26,  max: 50,       price: 12.95 },
+      { min: 51,  max: 99,       price: 10.95 },
+      { min: 100, max: Infinity, price: 8.95 }
+    ],
+    selects: [
+      { key: 'kleur',     label: 'Kleur',     options: ['Wit', 'Zwart', 'Transparant', 'Grijs', 'Blauw', 'Groen', 'Roze'] },
+      { key: 'materiaal', label: 'Materiaal', options: ['PETG (waterbestendig)', 'PLA'] },
+      { key: 'formaat',   label: 'Formaat',   options: [
+        { value: 'Standaard (1-2 borstels)', priceModifier: 0    },
+        { value: 'Groot (3-4 borstels)',     priceModifier: 4.00 }
+      ]}
+    ],
+    addons: [
+      { key: 'antislip_voetjes', name: 'Antislip rubber voetjes', price: 1.00, priceType: 'per_unit' },
+      { key: 'uv_print_naam',    name: 'UV print naam/logo',      price: 2.50, priceType: 'per_unit' }
+    ]
   }
 };
 
