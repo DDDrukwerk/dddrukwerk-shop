@@ -1,0 +1,26 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Transparent background - no fill needed -->
+
+  <!-- "ZON" text in white -->
+  <text x="400" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="white" letter-spacing="2">
+    ZON
+  </text>
+
+  <!-- "vriendschap" in handwriting style (dark brown/maroon) -->
+  <text x="400" y="280" font-family="'Brush Script MT', 'Lucida Handwriting', cursive" font-size="88" font-style="italic" text-anchor="middle" fill="#3d1f1f" opacity="0.9">
+    vriendschap
+  </text>
+
+  <!-- Subtitle text in white -->
+  <text x="400" y="380" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white" letter-spacing="1">
+    DIE MET ELKE HERINNERING
+  </text>
+  <text x="400" y="430" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="white" letter-spacing="1">
+    WAARDEROLLER WORDT
+  </text>
+
+  <!-- Heart symbol in dark brown -->
+  <g transform="translate(400, 500)">
+    <path d="M 0,-20 C -30,-40 -60,-20 -60,10 C -60,40 0,70 0,70 C 0,70 60,40 60,10 C 60,-20 30,-40 0,-20 Z" fill="#3d1f1f" opacity="0.9"/>
+  </g>
+</svg>
