@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- DDD Instagram-sjabloon. Vervang foto.jpg door je eigen foto en pas de teksten hieronder aan.
+     Open met ?story voor 1080x1920 (story), anders 1080x1350 (feed). -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--creme:#faf2ec;--zand:#f3e6dc;--rand:#c89f86;--bruin:#9a5f4b;--donker:#7a4e3f;--roze:#c9999a}
+*{box-sizing:border-box;margin:0}
+body{width:1080px;height:1350px;background:var(--creme);font-family:'Cormorant Garamond',serif;color:var(--donker);position:relative;overflow:hidden}
+body.story{height:1920px}
+/* zachte achtergrondcirkels */
+.blob{position:absolute;border-radius:50%;background:var(--zand)}
+.b1{width:620px;height:620px;left:-220px;top:-200px}.b2{width:520px;height:520px;right:-200px;bottom:-160px}
+.hart{position:absolute;color:var(--roze);font-size:34px}
+.frame{position:absolute;left:50%;transform:translateX(-50%);top:64px;width:772px;height:1029px;border:2px solid var(--rand);border-radius:34px;padding:14px;background:#fff8}
+.frame img{width:100%;height:100%;object-fit:cover;border-radius:22px;display:block}
+.logo{position:absolute;width:190px;height:190px;border-radius:50%;box-shadow:0 6px 24px #7a4e3f33}
+.onder{position:absolute;left:0;right:0;text-align:center}
+.kop{font-family:'Dancing Script',cursive;font-size:74px;color:var(--bruin);line-height:1}
+.lijn{display:flex;align-items:center;justify-content:center;gap:18px;margin:14px 0 12px;color:var(--roze);font-size:26px}
+.lijn:before,.lijn:after{content:"";width:150px;height:2px;background:var(--rand);border-radius:2px}
+.sub{font-size:34px;font-weight:600;letter-spacing:.5px}
+/* feed */
+body:not(.story) .logo{left:48px;top:950px}
+body:not(.story) .onder{top:1112px;padding-left:120px}
+/* story */
+.story .logo{left:50%;transform:translateX(-50%);top:70px;width:220px;height:220px}
+.story .frame{top:330px;width:900px;height:1200px}
+.story .onder{top:1590px}
+.story .kop{font-size:88px}
+</style></head><body>
+<div class="blob b1"></div><div class="blob b2"></div>
+<span class="hart" style="left:960px;top:40px">♥</span><span class="hart" style="left:70px;top:1270px;font-size:26px">♥</span>
+<div class="frame"><img src="foto.jpg" alt=""></div>
+<img class="logo" src="logo.png" alt="DDD logo">
+<div class="onder">
+  <div class="kop">Jouw naam, jouw beker</div>
+  <div class="lijn">♥</div>
+  <div class="sub">Gepersonaliseerd met liefde · Printing for you</div>
+</div>
+<script>if(location.search.includes('story'))document.body.classList.add('story')</script>
+</body></html>
