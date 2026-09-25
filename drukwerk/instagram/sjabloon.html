@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8">
 <!-- DDD Instagram-sjabloon. Vervang foto.jpg door je eigen foto en pas de teksten hieronder aan.
-     Open met ?story voor 1080x1920 (story), anders 1080x1350 (feed). -->
+     Open met ?story voor 1080x1920 (story), ?post2 voor feed met logo bovenaan, anders 1080x1350 (feed). -->
 <link rel="stylesheet" href="fonts.css">
 <style>
 :root{--creme:#faf2ec;--zand:#f3e6dc;--rand:#c89f86;--bruin:#9a5f4b;--donker:#7a4e3f;--roze:#c9999a}
@@ -20,13 +20,20 @@ body.story{height:1920px}
 .lijn:before,.lijn:after{content:"";width:150px;height:2px;background:var(--rand);border-radius:2px}
 .sub{font-size:31px;font-weight:600;letter-spacing:.5px}
 /* feed */
-body:not(.story) .logo{left:40px;top:1060px}
-body:not(.story) .onder{top:1160px;padding-left:190px}
+body:not(.story):not(.post2) .logo{left:40px;top:1060px}
+body:not(.story):not(.post2) .onder{top:1160px;padding-left:190px}
 /* story */
 .story .logo{left:50%;transform:translateX(-50%);top:48px;width:190px;height:190px}
 .story .frame{top:270px;width:1024px;height:1360px}
 .story .onder{top:1680px}
 .story .kop{font-size:88px}
+/* feed, variant 2: layout zoals de story */
+.post2 .logo{left:50%;transform:translateX(-50%);top:26px;width:140px;height:140px}
+.post2 .frame{top:186px;height:980px}
+.post2 .frame img{object-position:center 30%}
+.post2 .onder{top:1182px;padding-left:0}
+.post2 .kop{font-size:62px}
+.post2 .sub{font-size:29px}
 </style></head><body>
 <div class="blob b1"></div><div class="blob b2"></div>
 <span class="hart" style="left:1000px;top:1300px;font-size:26px">♥</span><span class="hart" style="display:none">♥</span>
@@ -37,5 +44,5 @@ body:not(.story) .onder{top:1160px;padding-left:190px}
   <div class="lijn">♥</div>
   <div class="sub">Gepersonaliseerd met liefde · Printing for you</div>
 </div>
-<script>if(location.search.includes('story'))document.body.classList.add('story')</script>
+<script>if(location.search.includes('story'))document.body.classList.add('story');if(location.search.includes('post2'))document.body.classList.add('post2')</script>
 </body></html>
