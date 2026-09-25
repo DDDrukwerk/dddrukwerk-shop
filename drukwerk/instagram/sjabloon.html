@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8">
 <!-- DDD Instagram-sjabloon. Vervang foto.jpg door je eigen foto en pas de teksten hieronder aan.
-     Open met ?story voor 1080x1920 (story), ?post2 voor feed met logo bovenaan, &foto=bestand.jpg voor een andere foto, anders 1080x1350 (feed). -->
+     Open met ?story voor 1080x1920 (story), ?post2 voor feed met logo bovenaan, &foto=bestand.jpg voor een andere foto, &kop=... / &sub=... voor andere tekst, anders 1080x1350 (feed). -->
 <link rel="stylesheet" href="fonts.css">
 <style>
 :root{--creme:#faf2ec;--zand:#f3e6dc;--rand:#c89f86;--bruin:#9a5f4b;--donker:#7a4e3f;--roze:#c9999a}
@@ -44,5 +44,5 @@ body:not(.story):not(.post2) .onder{top:1160px;padding-left:190px}
   <div class="lijn">♥</div>
   <div class="sub">Gepersonaliseerd met liefde · Printing for you</div>
 </div>
-<script>if(location.search.includes('story'))document.body.classList.add('story');if(location.search.includes('post2'))document.body.classList.add('post2');var f=new URLSearchParams(location.search).get('foto');if(f)document.querySelector('.frame img').src=f</script>
+<script>if(location.search.includes('story'))document.body.classList.add('story');if(location.search.includes('post2'))document.body.classList.add('post2');var f=new URLSearchParams(location.search).get('foto');if(f)document.querySelector('.frame img').src=f;var q=new URLSearchParams(location.search),k=q.get('kop'),s=q.get('sub');if(k)document.querySelector('.kop').textContent=k;if(s)document.querySelector('.sub').textContent=s</script>
 </body></html>
